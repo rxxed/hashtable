@@ -1,13 +1,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 #include "hash_table.h"
 
-static ht_item *ht_new_item(const char *k, const char *v);
-static void    ht_del_item(ht_item *i);
-ht_hash_table  *ht_new();
-void           ht_del_hash_table(ht_hash_table *ht);
+static ht_item    *ht_new_item(const char *k, const char *v);
+static void        ht_del_item(ht_item *i);
+ht_hash_table     *ht_new();
+void               ht_del_hash_table(ht_hash_table *ht);
+static int         ht_hash(const char *s, const int a, const int m);
 
 int
 main()
@@ -56,4 +58,20 @@ ht_del_hash_table(ht_hash_table *ht)
         }
         free(ht->items);
         free(ht);
+}
+
+/*
+ * The hash function takes a string as input and returns a number between 0 and m
+ * m is our desired bucket array length
+ */
+static int
+ht_hash(const char *s, const int a, const int m)
+{
+        long hash = 0;
+        const int len_s = strlen(s);
+        for (int i = 0; i < len_s; i++) {
+                hash += (long)pow(a, len_s - (i+1) * s[i]);
+                hash = hash % m;
+        }
+        return (int)hash;
 }
